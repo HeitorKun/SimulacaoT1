@@ -1,3 +1,5 @@
+#Heitor, Hojin, Gustavo
+
 import CongruenteLinear
 
 congruente = CongruenteLinear.CongruenteLinear(75,2**16 + 1,153,74,True)
@@ -14,6 +16,20 @@ class FilaAtendimento():
         self.saidaLowerBound = float(saidaTimeBounds[0])
         self.saidaUpperBound = float(saidaTimeBounds[1])
         self.currentFilaSize = 0
+        self.tableOfTimes = [0] * (self.tamanhoFilaMax+1)
+        self.lastTime = 0
+
+    def increaseCurrentFilaSize(self, currentTime: float):
+        deltaTime = currentTime - self.lastTime
+        self.tableOfTimes[self.currentFilaSize] += deltaTime
+        self.currentFilaSize += 1
+        self.lastTime = currentTime
+
+    def decreaseCurrentFilaSize(self, currentTime: float):
+        deltaTime = currentTime - self.lastTime
+        self.tableOfTimes[self.currentFilaSize] += deltaTime
+        self.currentFilaSize -= 1
+        self.lastTime = currentTime
 
 
     def getRandomSaidaTime(self, current: float)-> float:
@@ -68,7 +84,7 @@ def Chegada(fila: FilaAtendimento, currentTime: float):
     global historicoDeEventos
     historicoDeEventos.append("Chegada na fila: " + fila.nomeFila+ ", Tempo: "+ str(currentTime))
     if fila.currentFilaSize < fila.tamanhoFilaMax:
-        fila.currentFilaSize += 1
+        fila.increaseCurrentFilaSize(currentTime)
         if fila.quantidadeServidores >= fila.currentFilaSize:
             # agenda saida
             agendaSaida(fila, fila.getRandomSaidaTime(currentTime))
@@ -77,7 +93,7 @@ def Chegada(fila: FilaAtendimento, currentTime: float):
 def Saida(fila: FilaAtendimento, currentTime: float):
     global historicoDeEventos
     historicoDeEventos.append("Saida da fila: " + fila.nomeFila+ ", Tempo: "+ str(currentTime))
-    fila.currentFilaSize -= 1
+    fila.decreaseCurrentFilaSize(currentTime)
     if fila.currentFilaSize > 0: # >= 1
         agendaSaida(fila, fila.getRandomSaidaTime(currentTime))
 
@@ -95,12 +111,16 @@ def agendaSaida(fila: FilaAtendimento, futureTime: float):
         contEventosEscalonados += 1    
         addToQueue(Event(fila, "S", futureTime))
 
-addToQueue(Event(FilaAtendimento("fila do Hojin",1,3,[1,2],[3,6]), "C", 2.0))
+fila1 = FilaAtendimento("fila do Hojin",1,3,[1,2],[3,6])
+
+addToQueue(Event(fila1, "C", 2.0))
 while len(eventQueue) > 0:
+    """
     print("FilaSize current: " + str(eventQueue[0].fila.currentFilaSize))
     for i in eventQueue:
         print(i)
     print("---")
+    """
 
     nextEvent = eventQueue.pop()
     #nextEvent = nextEvent
@@ -112,4 +132,5 @@ while len(eventQueue) > 0:
 for i in historicoDeEventos:
     print(i)
 
-print("end")
+for i in enumerate(fila1.tableOfTimes):
+    print(i)
