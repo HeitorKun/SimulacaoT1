@@ -47,12 +47,15 @@ class Event():
 
 
 eventQueue = []
+count = 0
 def addToQueue(event: Event):
     global eventQueue
     def keyFunc(e):
         return e.time
     eventQueue.append(event)
     eventQueue.sort(key=keyFunc, reverse=True)
+    global count
+    count += 1
 
 historicoDeEventos = []
 contEventosEscalonados = 0
@@ -94,6 +97,7 @@ def agendaSaida(fila: FilaAtendimento, futureTime: float):
 
 addToQueue(Event(FilaAtendimento("fila do Hojin",1,3,[1,2],[3,6]), "C", 2.0))
 while len(eventQueue) > 0:
+    print("FilaSize current: " + str(eventQueue[0].fila.currentFilaSize))
     for i in eventQueue:
         print(i)
     print("---")
