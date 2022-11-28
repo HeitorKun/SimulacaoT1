@@ -3,6 +3,7 @@
 import sys
 import CongruenteLinear
 import copy
+import numpy
 
 #congruente = CongruenteLinear.CongruenteLinear(75,2**16 + 1,153,74,True)
 # print(congruente.geraAleatorio())
@@ -65,6 +66,7 @@ class FilaAtendimento():
         try:
             self.tableOfTimes[self.currentFilaSize] += deltaTime
         except IndexError:
+            print(self.currentFilaSize)
             self.tableOfTimes.append(0)
             self.tableOfTimes[self.currentFilaSize] += deltaTime
         
@@ -73,8 +75,10 @@ class FilaAtendimento():
 
     def decreaseCurrentFilaSize(self, currentTime: float):
         deltaTime = currentTime - self.lastTime
-        self.tableOfTimes[self.currentFilaSize] += deltaTime
-        self.currentFilaSize -= 1
+        try:
+            self.tableOfTimes[self.currentFilaSize] += deltaTime
+        except:
+            self.currentFilaSize -= 1
         self.lastTime = currentTime
 
     def getRandomSaidaTime(self, current: float)-> float:
@@ -197,12 +201,12 @@ fila3.setRouter([ProbailityFila(EmptyFilaAtendimento(), 0.3), ProbailityFila(fil
 
 run(fila1,2.5, queue)
 
-fila1table1 = fila1.tableOfTimes
-fila2table1 = fila2.tableOfTimes
-fila3table1 = fila3.tableOfTimes
+fila1table1 =  numpy.array(fila1.tableOfTimes)
+fila2table1 =  numpy.array(fila2.tableOfTimes)
+fila3table1 =  numpy.array(fila3.tableOfTimes)
 
-tables = copy.deepcopy([fila1table1, fila2table1, fila3table1])
 last1 = copy.deepcopy(max([fila1.lastTime, fila2.lastTime, fila3.lastTime]))
+tables = copy.deepcopy([fila1table1/last1, fila2table1/last1, fila3table1/last1])
 
 relativeTimeTable.append(tables)
 lastTimes.append(last1)
@@ -224,13 +228,12 @@ fila3.setRouter([ProbailityFila(EmptyFilaAtendimento(), 0.3), ProbailityFila(fil
 
 run(fila1,2.5, queue)
 
-fila1table1 = fila1.tableOfTimes
-fila2table1 = fila2.tableOfTimes
-fila3table1 = fila3.tableOfTimes
-
-tables2 = copy.deepcopy([fila1table1, fila2table1, fila3table1])
+fila1table1 =  numpy.array(fila1.tableOfTimes)
+fila2table1 =  numpy.array(fila2.tableOfTimes)
+fila3table1 =  numpy.array(fila3.tableOfTimes)
 
 last2 = copy.deepcopy(max([fila1.lastTime, fila2.lastTime, fila3.lastTime]))
+tables2 = copy.deepcopy([fila1table1/last2, fila2table1/last2, fila3table1/last2])
 
 relativeTimeTable.append(tables2)
 lastTimes.append(last2)
@@ -253,13 +256,14 @@ fila3.setRouter([ProbailityFila(EmptyFilaAtendimento(), 0.3), ProbailityFila(fil
 
 run(fila1,1.0, queue)
 
-fila1table1 = fila1.tableOfTimes
-fila2table1 = fila2.tableOfTimes
-fila3table1 = fila3.tableOfTimes
 
-tables3 = copy.deepcopy([fila1table1, fila2table1, fila3table1])
+
+fila1table1 =  numpy.array(fila1.tableOfTimes)
+fila2table1 =  numpy.array(fila2.tableOfTimes)
+fila3table1 =  numpy.array(fila3.tableOfTimes)
 
 last3 = copy.deepcopy(max([fila1.lastTime, fila2.lastTime, fila3.lastTime]))
+tables3 = copy.deepcopy([fila1table1/last3, fila2table1/last3, fila3table1/last3])
 
 relativeTimeTable.append(tables3)
 lastTimes.append(last3)
@@ -282,13 +286,12 @@ fila3.setRouter([ProbailityFila(EmptyFilaAtendimento(), 0.3), ProbailityFila(fil
 
 run(fila1,1.0, queue)
 
-fila1table1 = fila1.tableOfTimes
-fila2table1 = fila2.tableOfTimes
-fila3table1 = fila3.tableOfTimes
-
-tables4 = copy.deepcopy([fila1table1, fila2table1, fila3table1])
+fila1table1 =  numpy.array(fila1.tableOfTimes)
+fila2table1 =  numpy.array(fila2.tableOfTimes)
+fila3table1 =  numpy.array(fila3.tableOfTimes)
 
 last4 = copy.deepcopy(max([fila1.lastTime, fila2.lastTime, fila3.lastTime]))
+tables4 = copy.deepcopy([fila1table1/last4, fila2table1/last4, fila3table1/last4])
 
 relativeTimeTable.append(tables4)
 lastTimes.append(last4)
@@ -311,31 +314,41 @@ fila3.setRouter([ProbailityFila(EmptyFilaAtendimento(), 0.3), ProbailityFila(fil
 
 run(fila1,1.0, queue)
 
-fila1table1 = fila1.tableOfTimes
-fila2table1 = fila2.tableOfTimes
-fila3table1 = fila3.tableOfTimes
+fila1table1 =  numpy.array(fila1.tableOfTimes)
+fila2table1 =  numpy.array(fila2.tableOfTimes)
+fila3table1 =  numpy.array(fila3.tableOfTimes)
 
-tables5 = copy.deepcopy([fila1table1, fila2table1, fila3table1])
 
 last5 = copy.deepcopy(max([fila1.lastTime, fila2.lastTime, fila3.lastTime]))
+tables5 = copy.deepcopy([fila1table1/last5, fila2table1/last5, fila3table1/last5])
+
+
 
 relativeTimeTable.append(tables5)
 lastTimes.append(last5)
 
-
 # compiling data for display
 
-for t in relativeTimeTable:
-    print(t)
 
+for i in range(len(relativeTimeTable)):
+    for filaIndex in range(len(relativeTimeTable[i])):
+        for (i,p) in enumerate(relativeTimeTable[i][filaIndex]):
+            if p > 0.00001:
+                filaNum = int(i)
+                print("fila: "+ str(filaNum)+ " clientes: "+ "probabilidade: " + str(p))
 
 
 """
-for (c, t) in enumerate(fila.tableOfTimes):
-    relativeTimeTable.append((c, t/totalTime))
-    #print( "percent time spent with " + str(c) + " custumers: " + str(t/totalTime) )
+filasRelativasSomadas = [[0.0]]*3
 
-print("---")
+for i in range(len(relativeTimeTable)):
+    for filaIndex in range(len(relativeTimeTable[i])):
+        for numero in range(len(relativeTimeTable[i][filaIndex])):
+            if len(filasRelativasSomadas[filaIndex]) < relativeTimeTable[i][filaIndex]:
+                filasRelativasSomadas[filaIndex] +=  relativeTimeTable[i][filaIndex]
+            else:
+                filasRelativasSomadas[filaIndex].append(0.0)
+                filasRelativasSomadas[filaIndex] +=  relativeTimeTable[i][filaIndex]
 
 
 for i in (historicoDeEventos):
