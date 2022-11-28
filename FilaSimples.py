@@ -75,7 +75,7 @@ def addToQueue(event: Event):
 
 historicoDeEventos = []
 contEventosEscalonados = 0
-limite = 7 - 2
+limite = 0
 
 # Mark: algoritmo aqui
 
@@ -111,26 +111,48 @@ def agendaSaida(fila: FilaAtendimento, futureTime: float):
         contEventosEscalonados += 1    
         addToQueue(Event(fila, "S", futureTime))
 
-fila1 = FilaAtendimento("fila do Hojin",1,3,[1,2],[3,6])
+def run(fila: FilaAtendimento, firstTime: float, newLimite = int):
+    global eventQueue
+    global contEventosEscalonados
+    global limite
+    global historicoDeEventos
+    eventQueue = []
+    contEventosEscalonados = 0
+    limite = newLimite + 2
+    historicoDeEventos = []
+    addToQueue(Event(fila, "C", firstTime))
 
-addToQueue(Event(fila1, "C", 2.0))
-while len(eventQueue) > 0:
-    """
-    print("FilaSize current: " + str(eventQueue[0].fila.currentFilaSize))
-    for i in eventQueue:
-        print(i)
-    print("---")
-    """
+    while len(eventQueue) > 0:
+        """
+        print("FilaSize current: " + str(eventQueue[0].fila.currentFilaSize))
+        for i in eventQueue:
+            print(i)
+        print("---")
+        """
 
-    nextEvent = eventQueue.pop()
-    #nextEvent = nextEvent
-    if nextEvent.type == "C":
-        Chegada(nextEvent.fila, nextEvent.time)
-    elif nextEvent.type == "S" :
-        Saida(nextEvent.fila, nextEvent.time)
+        nextEvent = eventQueue.pop()
+        if nextEvent.type == "C":
+            Chegada(nextEvent.fila, nextEvent.time)
+        elif nextEvent.type == "S" :
+            Saida(nextEvent.fila, nextEvent.time)
 
-for i in historicoDeEventos:
-    print(i)
+    #for i in historicoDeEventos:
+    #   print(i)
 
-for i in enumerate(fila1.tableOfTimes):
-    print(i)
+    for (c, t) in enumerate(fila.tableOfTimes):
+        print( "time spent with " + str(c) + " custumers: " + str(t) )
+
+    totalTime = fila.lastTime
+    relativeTimeTable = []
+    for (c, t) in enumerate(fila.tableOfTimes):
+        relativeTimeTable.append((c/totalTime, t/totalTime))
+        print( "percent time spent with " + str(c/totalTime) + " custumers: " + str(t/totalTime) )
+    
+    return relativeTimeTable
+
+fila1 = FilaAtendimento("fila1",1,3,[2,3],[2,5])
+
+run(fila1,2.5,100000)
+
+
+

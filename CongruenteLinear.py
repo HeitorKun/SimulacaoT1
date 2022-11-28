@@ -15,15 +15,16 @@ class CongruenteLinear:
         self.uniformimenteDistribuido = uniformimenteDistribuido
         self.primeiroNumero = True 
 
-        self.ponteiro = 0 
-        self.arrayTeste = [0.3276, 0.8851, 0.1643, 0.5542, 0.6813, 0.7221, 0.9881]
+        #self.ponteiro = 0 
+        #self.arrayTeste = [0.3276, 0.8851, 0.1643, 0.5542, 0.6813, 0.7221, 0.9881]
 
     def geraAleatorio(self):
+        """ 
         r = self.arrayTeste[self.ponteiro]
         self.ponteiro += 1
         return r
-
         """
+
         if self.primeiroNumero:
             self.primeiroNumero = False
             self.x0 = ((self.a*self.seed) + self.c) % self.m
@@ -38,7 +39,7 @@ class CongruenteLinear:
                 return self.xn / self.m
             else:
                 return self.xn
-            """
+            
             
     
 
