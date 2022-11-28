@@ -2,10 +2,11 @@
 
 import sys
 import CongruenteLinear
+import copy
 
 #congruente = CongruenteLinear.CongruenteLinear(75,2**16 + 1,153,74,True)
 # print(congruente.geraAleatorio())
-quantidadeAleatorios = 10000
+quantidadeAleatorios = 100000
 
 class FilaAtendimento():
     def __init__(self, nomeFila: str ,quantidadeServidores: int ,tamanhoFilaMax:int, chegadaTimeBounds, saidaTimeBounds, queue ):
@@ -177,10 +178,13 @@ class ProbailityFila:
         self.fila = fila
         self.probability = probability
 
+relativeTimeTable = []
+lastTimes = []
+# first simulation
 
 congruente = CongruenteLinear.CongruenteLinear(75,2**16 + 1,153,74,True)
 queue = Queue(congruente)
-maxInt = int(sys.maxsize / 100000)
+maxInt = int(sys.maxsize )
 fila1 = FilaAtendimento("F1",1,None,[1,4],[1,1.5], queue)
 fila2 = FilaAtendimento("F2",3,5,[maxInt,maxInt],[5,10], queue)
 fila2.automaticReEntry = False
@@ -191,17 +195,149 @@ fila1.setRouter([ProbailityFila(fila3, 0.2), ProbailityFila(fila2, 0.8)])
 fila2.setRouter([ProbailityFila(EmptyFilaAtendimento(), 0.2) ,ProbailityFila(fila1, 0.3), ProbailityFila(fila3, 0.5)])
 fila3.setRouter([ProbailityFila(EmptyFilaAtendimento(), 0.3), ProbailityFila(fila2, 0.7)])
 
-fila1table1 = run(fila1,2.5, queue)
+run(fila1,2.5, queue)
 
-fila = fila1
-totalTime = fila.lastTime
-relativeTimeTable = []
+fila1table1 = fila1.tableOfTimes
+fila2table1 = fila2.tableOfTimes
+fila3table1 = fila3.tableOfTimes
+
+tables = copy.deepcopy([fila1table1, fila2table1, fila3table1])
+last1 = copy.deepcopy(max([fila1.lastTime, fila2.lastTime, fila3.lastTime]))
+
+relativeTimeTable.append(tables)
+lastTimes.append(last1)
+
+#second sinualtion
+
+congruente = CongruenteLinear.CongruenteLinear(218,41**7 + 330, 60,222,True)
+queue = Queue(congruente)
+maxInt = int(sys.maxsize )
+fila1 = FilaAtendimento("F1",1,None,[1,4],[1,1.5], queue)
+fila2 = FilaAtendimento("F2",3,5,[maxInt,maxInt],[5,10], queue)
+fila2.automaticReEntry = False
+fila3 = FilaAtendimento("F3",2,8,[maxInt,maxInt],[10,20], queue)
+fila3.automaticReEntry = False
+
+fila1.setRouter([ProbailityFila(fila3, 0.2), ProbailityFila(fila2, 0.8)])
+fila2.setRouter([ProbailityFila(EmptyFilaAtendimento(), 0.2) ,ProbailityFila(fila1, 0.3), ProbailityFila(fila3, 0.5)])
+fila3.setRouter([ProbailityFila(EmptyFilaAtendimento(), 0.3), ProbailityFila(fila2, 0.7)])
+
+run(fila1,2.5, queue)
+
+fila1table1 = fila1.tableOfTimes
+fila2table1 = fila2.tableOfTimes
+fila3table1 = fila3.tableOfTimes
+
+tables2 = copy.deepcopy([fila1table1, fila2table1, fila3table1])
+
+last2 = copy.deepcopy(max([fila1.lastTime, fila2.lastTime, fila3.lastTime]))
+
+relativeTimeTable.append(tables2)
+lastTimes.append(last2)
+
+
+#third sinualtion
+
+congruente = CongruenteLinear.CongruenteLinear(78375,5**17 + 331,68253,86784,True)
+queue = Queue(congruente)
+maxInt = int(sys.maxsize )
+fila1 = FilaAtendimento("F1",1,None,[1,4],[1,1.5], queue)
+fila2 = FilaAtendimento("F2",3,5,[maxInt,maxInt],[5,10], queue)
+fila2.automaticReEntry = False
+fila3 = FilaAtendimento("F3",2,8,[maxInt,maxInt],[10,20], queue)
+fila3.automaticReEntry = False
+
+fila1.setRouter([ProbailityFila(fila3, 0.2), ProbailityFila(fila2, 0.8)])
+fila2.setRouter([ProbailityFila(EmptyFilaAtendimento(), 0.2) ,ProbailityFila(fila1, 0.3), ProbailityFila(fila3, 0.5)])
+fila3.setRouter([ProbailityFila(EmptyFilaAtendimento(), 0.3), ProbailityFila(fila2, 0.7)])
+
+run(fila1,1.0, queue)
+
+fila1table1 = fila1.tableOfTimes
+fila2table1 = fila2.tableOfTimes
+fila3table1 = fila3.tableOfTimes
+
+tables3 = copy.deepcopy([fila1table1, fila2table1, fila3table1])
+
+last3 = copy.deepcopy(max([fila1.lastTime, fila2.lastTime, fila3.lastTime]))
+
+relativeTimeTable.append(tables3)
+lastTimes.append(last3)
+
+
+#4th sinualtion
+
+congruente = CongruenteLinear.CongruenteLinear(1735,3*17 + 31,1453,3724,True)
+queue = Queue(congruente)
+maxInt = int(sys.maxsize )
+fila1 = FilaAtendimento("F1",1,None,[1,4],[1,1.5], queue)
+fila2 = FilaAtendimento("F2",3,5,[maxInt,maxInt],[5,10], queue)
+fila2.automaticReEntry = False
+fila3 = FilaAtendimento("F3",2,8,[maxInt,maxInt],[10,20], queue)
+fila3.automaticReEntry = False
+
+fila1.setRouter([ProbailityFila(fila3, 0.2), ProbailityFila(fila2, 0.8)])
+fila2.setRouter([ProbailityFila(EmptyFilaAtendimento(), 0.2) ,ProbailityFila(fila1, 0.3), ProbailityFila(fila3, 0.5)])
+fila3.setRouter([ProbailityFila(EmptyFilaAtendimento(), 0.3), ProbailityFila(fila2, 0.7)])
+
+run(fila1,1.0, queue)
+
+fila1table1 = fila1.tableOfTimes
+fila2table1 = fila2.tableOfTimes
+fila3table1 = fila3.tableOfTimes
+
+tables4 = copy.deepcopy([fila1table1, fila2table1, fila3table1])
+
+last4 = copy.deepcopy(max([fila1.lastTime, fila2.lastTime, fila3.lastTime]))
+
+relativeTimeTable.append(tables4)
+lastTimes.append(last4)
+
+
+#5th sinualtion
+
+congruente = CongruenteLinear.CongruenteLinear(75123,7**12 + 12,1532,734,True)
+queue = Queue(congruente)
+maxInt = int(sys.maxsize )
+fila1 = FilaAtendimento("F1",1,None,[1,4],[1,1.5], queue)
+fila2 = FilaAtendimento("F2",3,5,[maxInt,maxInt],[5,10], queue)
+fila2.automaticReEntry = False
+fila3 = FilaAtendimento("F3",2,8,[maxInt,maxInt],[10,20], queue)
+fila3.automaticReEntry = False
+
+fila1.setRouter([ProbailityFila(fila3, 0.2), ProbailityFila(fila2, 0.8)])
+fila2.setRouter([ProbailityFila(EmptyFilaAtendimento(), 0.2) ,ProbailityFila(fila1, 0.3), ProbailityFila(fila3, 0.5)])
+fila3.setRouter([ProbailityFila(EmptyFilaAtendimento(), 0.3), ProbailityFila(fila2, 0.7)])
+
+run(fila1,1.0, queue)
+
+fila1table1 = fila1.tableOfTimes
+fila2table1 = fila2.tableOfTimes
+fila3table1 = fila3.tableOfTimes
+
+tables5 = copy.deepcopy([fila1table1, fila2table1, fila3table1])
+
+last5 = copy.deepcopy(max([fila1.lastTime, fila2.lastTime, fila3.lastTime]))
+
+relativeTimeTable.append(tables5)
+lastTimes.append(last5)
+
+
+# compiling data for display
+
+for t in relativeTimeTable:
+    print(t)
+
+
+
+"""
 for (c, t) in enumerate(fila.tableOfTimes):
     relativeTimeTable.append((c, t/totalTime))
     #print( "percent time spent with " + str(c) + " custumers: " + str(t/totalTime) )
+
 print("---")
 
-"""
+
 for i in (historicoDeEventos):
    print(i)
 """
