@@ -30,15 +30,15 @@ class CongruenteLinear:
             self.x0 = ((self.a*self.seed) + self.c) % self.m
             self.xn = self.x0
             if self.uniformimenteDistribuido:
-                return self.x0 / self.m
+                return abs(self.x0 / self.m)
             else:
-                return self.x0
+                return abs(self.x0)
         else:
             self.xn = ((self.a*self.xn) + self.c )% self.m
             if self.uniformimenteDistribuido:
-                return self.xn / self.m
+                return abs(self.xn / self.m)
             else:
-                return self.xn
+                return abs(self.xn)
             
             
     

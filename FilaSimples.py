@@ -2,12 +2,12 @@
 
 import CongruenteLinear
 
-congruente = CongruenteLinear.CongruenteLinear(75,2**16 + 1,153,74,True)
+#congruente = CongruenteLinear.CongruenteLinear(75,2**16 + 1,153,74,True)
 # print(congruente.geraAleatorio())
 
 
 class FilaAtendimento():
-    def __init__(self, nomeFila: str ,quantidadeServidores: int ,tamanhoFilaMax:int, chegadaTimeBounds, saidaTimeBounds ):
+    def __init__(self, nomeFila: str ,quantidadeServidores: int ,tamanhoFilaMax:int, chegadaTimeBounds, saidaTimeBounds, congruent, queue ):
         self.nomeFila = nomeFila
         self.quantidadeServidores = quantidadeServidores
         self.tamanhoFilaMax = tamanhoFilaMax
@@ -18,6 +18,28 @@ class FilaAtendimento():
         self.currentFilaSize = 0
         self.tableOfTimes = [0] * (self.tamanhoFilaMax+1)
         self.lastTime = 0
+        self.congruent = congruent
+        self.queue = queue
+
+    def Chegada(self, currentTime: float):
+    # contabiliza tempo
+        global historicoDeEventos
+        fila = self
+        historicoDeEventos.append("Chegada na fila: " + fila.nomeFila+ ", Tempo: "+ str(currentTime))
+        if fila.currentFilaSize < fila.tamanhoFilaMax:
+            fila.increaseCurrentFilaSize(currentTime)
+            if fila.quantidadeServidores >= fila.currentFilaSize:
+                # agenda saida
+                self.queue.agendaSaida(fila, fila.getRandomSaidaTime(currentTime))
+        self.queue.agendaChegada(fila,fila.getRandomChegadaTime(currentTime))
+
+    def Saida(self , currentTime: float):
+        global historicoDeEventos
+        fila = self
+        historicoDeEventos.append("Saida da fila: " + fila.nomeFila+ ", Tempo: "+ str(currentTime))
+        fila.decreaseCurrentFilaSize(currentTime)
+        if fila.currentFilaSize > 0: # >= 1
+            self.queue.agendaSaida(fila, fila.getRandomSaidaTime(currentTime))
 
     def increaseCurrentFilaSize(self, currentTime: float):
         deltaTime = currentTime - self.lastTime
@@ -31,15 +53,12 @@ class FilaAtendimento():
         self.currentFilaSize -= 1
         self.lastTime = currentTime
 
-
     def getRandomSaidaTime(self, current: float)-> float:
         random = self.getRandom(self.saidaLowerBound, self.saidaUpperBound)
         result = current + random
         return result
 
     def getRandomChegadaTime(self, current: float)-> float:
-        global congruente
-        
         randomResult = self.getRandom(self.chegadaLowerBound, self.chegadaUpperBound)
         result = current + randomResult
         #print(type(current))
@@ -47,8 +66,8 @@ class FilaAtendimento():
         return result
 
     def getRandom(self, lower: float, upper: float) -> float :
-        global congruente
-        random = float(congruente.geraAleatorio())
+        congruent = self.congruent
+        random = float(congruent.geraAleatorio())
         u = (upper - lower)*random  + lower
         return u
 
@@ -62,67 +81,45 @@ class Event():
         return "tempo: "+ str(self.time) + ", tipo: "+  self.type
 
 
-eventQueue = []
-count = 0
-def addToQueue(event: Event):
-    global eventQueue
-    def keyFunc(e):
-        return e.time
-    eventQueue.append(event)
-    eventQueue.sort(key=keyFunc, reverse=True)
-    global count
-    count += 1
+
+
+class Queue:
+    def __init__(self):
+        self.eventQueue = []
+        self.count = 0
+        self.contEventosEscalonados = 0
+        self.limite = 100000
+
+    def addToQueue(self, event: Event):
+        def keyFunc(e):
+            return e.time
+        self.eventQueue.append(event)
+        self.eventQueue.sort(key=keyFunc, reverse=True)
+        self.count += 1
+
+    def agendaChegada(self, fila: FilaAtendimento , futureTime: float):
+
+        if self.contEventosEscalonados < self.limite:
+            self.contEventosEscalonados += 1
+            self.addToQueue(Event(fila, "C", futureTime))
+
+    def agendaSaida(self, fila: FilaAtendimento, futureTime: float):
+
+        if self.contEventosEscalonados < self.limite:
+            self.contEventosEscalonados += 1
+            self.addToQueue(Event(fila, "S", futureTime))
 
 historicoDeEventos = []
-contEventosEscalonados = 0
-limite = 0
 
 # Mark: algoritmo aqui
 
-def Chegada(fila: FilaAtendimento, currentTime: float):
-    # contabiliza tempo
+def run(fila: FilaAtendimento, firstTime: float, queue: Queue):
+
     global historicoDeEventos
-    historicoDeEventos.append("Chegada na fila: " + fila.nomeFila+ ", Tempo: "+ str(currentTime))
-    if fila.currentFilaSize < fila.tamanhoFilaMax:
-        fila.increaseCurrentFilaSize(currentTime)
-        if fila.quantidadeServidores >= fila.currentFilaSize:
-            # agenda saida
-            agendaSaida(fila, fila.getRandomSaidaTime(currentTime))
-    agendaChegada(fila,fila.getRandomChegadaTime(currentTime))
-
-def Saida(fila: FilaAtendimento, currentTime: float):
-    global historicoDeEventos
-    historicoDeEventos.append("Saida da fila: " + fila.nomeFila+ ", Tempo: "+ str(currentTime))
-    fila.decreaseCurrentFilaSize(currentTime)
-    if fila.currentFilaSize > 0: # >= 1
-        agendaSaida(fila, fila.getRandomSaidaTime(currentTime))
-
-def agendaChegada(fila: FilaAtendimento, futureTime: float):
-    global contEventosEscalonados
-    global limite
-    if contEventosEscalonados < limite:
-        contEventosEscalonados += 1
-        addToQueue(Event(fila, "C", futureTime))
-
-def agendaSaida(fila: FilaAtendimento, futureTime: float):
-    global contEventosEscalonados
-    global limite
-    if contEventosEscalonados < limite:
-        contEventosEscalonados += 1    
-        addToQueue(Event(fila, "S", futureTime))
-
-def run(fila: FilaAtendimento, firstTime: float, newLimite = int):
-    global eventQueue
-    global contEventosEscalonados
-    global limite
-    global historicoDeEventos
-    eventQueue = []
-    contEventosEscalonados = 0
-    limite = newLimite + 2
     historicoDeEventos = []
-    addToQueue(Event(fila, "C", firstTime))
-
-    while len(eventQueue) > 0:
+    print(type(queue))
+    queue.addToQueue(Event(fila, "C", firstTime))
+    while len(queue.eventQueue) > 0:
         """
         print("FilaSize current: " + str(eventQueue[0].fila.currentFilaSize))
         for i in eventQueue:
@@ -130,29 +127,39 @@ def run(fila: FilaAtendimento, firstTime: float, newLimite = int):
         print("---")
         """
 
-        nextEvent = eventQueue.pop()
+        nextEvent = queue.eventQueue.pop()
         if nextEvent.type == "C":
-            Chegada(nextEvent.fila, nextEvent.time)
+            nextEvent.fila.Chegada(nextEvent.time)
         elif nextEvent.type == "S" :
-            Saida(nextEvent.fila, nextEvent.time)
+            nextEvent.fila.Saida(nextEvent.time)
 
     #for i in historicoDeEventos:
     #   print(i)
 
-    for (c, t) in enumerate(fila.tableOfTimes):
-        print( "time spent with " + str(c) + " custumers: " + str(t) )
+    #for (c, t) in enumerate(fila.tableOfTimes):
+    #    print( "time spent with " + str(c) + " custumers: " + str(t) )
 
     totalTime = fila.lastTime
     relativeTimeTable = []
     for (c, t) in enumerate(fila.tableOfTimes):
-        relativeTimeTable.append((c/totalTime, t/totalTime))
-        print( "percent time spent with " + str(c/totalTime) + " custumers: " + str(t/totalTime) )
-    
+        relativeTimeTable.append((c, t/totalTime))
+        print( "percent time spent with " + str(c) + " custumers: " + str(t/totalTime) )
+    print("---")
     return relativeTimeTable
 
-fila1 = FilaAtendimento("fila1",1,3,[2,3],[2,5])
 
-run(fila1,2.5,100000)
+queue = Queue()
 
 
+congruente = CongruenteLinear.CongruenteLinear(75,2**16 + 1,153,74,True)
+fila1 = FilaAtendimento("fila1",1,5,[2,4],[3,5],congruente, queue)
+fila1table1 = run(fila1,2.5, queue)
+
+congruente2 = CongruenteLinear.CongruenteLinear(130, 10 + 1, 1, 1,True)
+fila2 = FilaAtendimento("fila2",1,5,[2,4],[3,5],congruente2, queue)
+fila1table2 = run(fila1,2.5, queue)
+
+congruente3 = CongruenteLinear.CongruenteLinear(752,7**16 + 2,351,41,True)
+fila3 = FilaAtendimento("fila2",1,5,[2,4],[3,5],congruente2, queue)
+fila1table3 = run(fila1,2.5, queue)
 
